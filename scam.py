@@ -1,11 +1,10 @@
 import requests
 import os
 
+from people_detection import PeopleDetection
 from PIL import Image
-from io  import BytesIO
-from time import time
-
-from pip._vendor.distlib.metadata import _get_name_and_version
+from io import BytesIO
+from time import time, sleep
 
 
 class Scam(object):
@@ -74,31 +73,49 @@ class Scam(object):
     }
     scam_endpoint = "/cams/%s.jpg"
 
-
     class CamDoesNotExist(Exception):
         """Only purpose of this exception is to give a clear message error for debug."""
+
         def __init__(self, region, camera):
             super(CamDoesNotExist, self).__init__("Error camera: %s (%s) does not exist." % (camera, region))
 
-    def _get_cam_data(self, region, camera):
+    def __init__(self, camera):
+        """Return the Scam object for the camera."""
+        self.region = self._get_camera_region(camera)
+        self.camera = camera
+        self.dir_path = "img/%s/%s" % (self.region, self.camera)
+        self.pd = PeopleDetection(self._get_background_img_path())
+
+    def _get_camera_region(self, camera):
+        """Get the region of the camera. Return the region if camera is found. Else raise CamDoesNotExist exception."""
+        for cam_region, cam_list in self.cam_endpoints.items():
+            if camera in cam_list:
+                return cam_region
+        raise self.CamDoesNotExist("???", camera)
+
+    def _get_cam_data(self, camera):
         """
         Perform an GET request to scam and return the camera image as binary content if success.
         If request fail, return None.
-        If one or both of parameters are invalid, this function raise an CamDoesNotExist Exception.
         """
-        if ((region not in self.cam_endpoints.keys()) or (not camera in self.cam_endpoints[region])):
-            raise self.CamDoesNotExist(region, camera)
-        else:
-            nowstamp = int(time())
-            try:
-                rep = requests.get("%s%s?%s" % (self.base_url, (self.scam_endpoint % camera), nowstamp))
-                if rep.ok:
-                    return (rep.content)
-            except requests.exceptions.RequestException as e:
-                print("Error with request: %s" % e)
-            return (None)
+        nowstamp = int(time())
+        try:
+            rep = requests.get("%s%s?%s" % (self.base_url, (self.scam_endpoint % camera), nowstamp))
+            if rep.ok:
+                return rep.content
+        except requests.exceptions.RequestException as e:
+            print("Error with request: %s" % e)
+        return None
 
-    def _get_and_crop_data_to_image(self, data):
+    def _get_background_img_path(self):
+        """Try to get the background image. Return the path if exist, else return None"""
+        if os.path.isfile("%s/background.jpg" % (self.dir_path)):
+            return "%s/background.jpg" % (self.dir_path)
+        else:
+            return None
+
+    @staticmethod
+    def _get_and_crop_data_to_image(data):
         """Take Cam binary data and crop it to remove Date/Hour. Then return an Pillow Image object."""
         img = Image.open(BytesIO(data))
         w, h = img.size
@@ -108,28 +125,22 @@ class Scam(object):
             # Every image from scam always raise an 'image file is truncated' error.
             # This first try catch this weird error. TODO (do it properly !)
             pass
-        return (img.crop((0, 35, w, (h - 35))))
+        return img.crop((0, 35, w, (h - 35)))
 
-    def _save_and_crop_data_to_image(self, data, outpath):
-        """Take Cam binary data, crop it to remove Date/Hour and save it into an .jpg file."""
-        self._get_and_crop_data_to_image(data).save(outpath, "JPEG")
+    def get_cam_image(self):
+        """Return Image object of the camera current image. Else return None"""
+        data = self._get_cam_data(self.camera)
+        if data:
+            return self._get_and_crop_data_to_image(data)
+        else:
+            return None
 
-    def save_cam_image(self, region, camera, filename="1.jpg"):
+    def save_cam_image(self, filename="1.jpg"):
         """
-        Save the desired camera into the img path: img/{region}/{camera}/{filename}.
-        Return imagepath if success, else return False.
+        Save the desired self.camera into the img path: img/{self.region}/{self.camera}/{filename}.
+        Return Image object of the current image on camera.
         """
-        dir_path = "img/%s/%s" % (region, camera)
-        os.makedirs(dir_path, exist_ok=True)
-        try:
-            data = self._get_cam_data(region, camera)
-            if data:
-                self._save_and_crop_data_to_image(data, "%s/%s" % (dir_path, filename))
-                return ("%s/%s" % (dir_path, filename))
-            else:
-                print("An error occured with scam website.")
-        except (self.CamDoesNotExist) as e:
-            print(e)
-        return (False)
-
-    def save_cam_sequence(self, region, camera, filename="1.we"):
+        os.makedirs(self.dir_path, exist_ok=True)
+        img = self.get_cam_image()
+        img.save("%s/%s" % (self.dir_path, filename), "JPEG")
+        return img
