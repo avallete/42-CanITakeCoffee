@@ -144,22 +144,3 @@ class Scam(object):
         img = self.get_cam_image()
         img.save("%s/%s" % (self.dir_path, filename), "JPEG")
         return img
-
-    # def save_debug_video(self):
-    #     os.makedirs("%s/debug/raw" % self.dir_path, exist_ok=True)
-    #     try:
-    #         while True:
-    #             self.save_cam_image("debug/raw/%s.jpg" % int(time()))
-    #             sleep(1)
-    #     except KeyboardInterrupt:
-    #         pass
-    #
-    # def analyse_debug(self):
-    #     os.makedirs("%s/debug/analysis" % self.dir_path, exist_ok=True)
-    #     for filename in os.listdir("%s/debug/raw" % self.dir_path):
-    #         img = Image.open("%s/debug/raw/%s" % (self.dir_path, filename))
-    #         self.pd.detect_and_show_img(self.pd.pil_to_cv2_img(img), "%s/debug/analysis/%s" % (self.dir_path, filename[:-4]))
-
-    # def show_detection(self):
-    #     frame = self.get_cam_image()
-    #     self.pd.detect_and_show_img(self.pd.pil_to_cv2_img(frame))
