@@ -2,12 +2,12 @@ import os
 import argparse
 from blessings import Terminal
 from time import sleep, time
-from scam import Scam
+from coffee_machine_cam import CoffeeMachineCam
 from people_detection import PeopleDetection
 
 
 def monitor_coffee_machine(min_area=500, debug=False):
-    cam = Scam('cam-kfet-cuisine-se')
+    cam = CoffeeMachineCam()
     detector = PeopleDetection(cam._get_background_img_path())
     term = Terminal()
     if debug:
