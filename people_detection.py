@@ -20,7 +20,7 @@ class PeopleDetection(object):
 
     def get_image_thresh(self, frame):
         frame_delta = self.get_background_frame_delta(frame)
-        thresh = cv2.threshold(frame_delta, 35, 255, cv2.THRESH_BINARY)[1]
+        thresh = cv2.threshold(frame_delta, 20, 255, cv2.THRESH_BINARY)[1]
         thresh = cv2.dilate(thresh, None, iterations=2)
         return thresh
 
@@ -41,8 +41,9 @@ class PeopleDetection(object):
 
     def debug_process(self, frame, filepath, min_area=350):
         frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
-        cv2.imwrite("%s-Thresh.jpg" % filepath, self.get_image_thresh(frame.copy()))
-        cv2.imwrite("%s-Delta.jpg" % filepath, self.get_background_frame_delta(frame.copy()))
+        cv2.imwrite("%s-Orig.jpg" % filepath, frame)
+        cv2.imwrite("%s-Thresh.jpg" % filepath, self.get_image_thresh(frame))
+        cv2.imwrite("%s-Delta.jpg" % filepath, self.get_background_frame_delta(frame))
         cv2.imwrite("%s-Objects.jpg" % filepath, self.trace_contours(frame.copy(), self.detect_objects_on_frame(frame), min_area))
 
     @staticmethod
