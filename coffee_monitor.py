@@ -9,7 +9,7 @@ from time import sleep, time
 
 def monitor_coffee_machine(min_area=500, debug=False):
     cam = CoffeeMachineCam()
-    detector = PeopleDetection(cam._get_background_img_path())
+    detector = PeopleDetection(cam._get_background_img_path(), "%s/mask.jpg" % cam.dir_path)
     term = Terminal()
 
     if debug:
@@ -34,7 +34,7 @@ def monitor_coffee_machine(min_area=500, debug=False):
 
 def analyse_folder(path, min_area=500):
     cam = CoffeeMachineCam()
-    detector = PeopleDetection(cam._get_background_img_path())
+    detector = PeopleDetection(cam._get_background_img_path(), "%s/mask.jpg" % cam.dir_path)
     i = 0
 
     os.makedirs("debug/analyse/", exist_ok=True)

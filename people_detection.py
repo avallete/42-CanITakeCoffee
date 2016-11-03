@@ -5,17 +5,23 @@ import cv2
 
 class PeopleDetection(object):
 
-    def __init__(self, background_path):
+    def __init__(self, background_path, image_mask=False):
         self.background_cv2 = cv2.imread(background_path)
         self.work_background = imutils.resize(self.background_cv2, width=min(600, self.background_cv2.shape[1]))
         self.background_gray = cv2.cvtColor(self.work_background, cv2.COLOR_BGR2GRAY)
         self.background_gray = cv2.medianBlur(self.background_gray, 5)
+        if image_mask:
+            self.image_mask = imutils.resize(cv2.imread(image_mask, cv2.IMREAD_GRAYSCALE), width=min(600, self.background_cv2.shape[1]))
+        else:
+            self.image_mask = False
 
     def get_background_frame_delta(self, frame):
         frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         frame_gray = cv2.medianBlur(frame_gray, 5)
         frame_delta = cv2.absdiff(self.background_gray, frame_gray)
+        if self.image_mask is not False:
+            frame_delta = cv2.bitwise_and(frame_delta, self.image_mask)
         return frame_delta
 
     def get_image_thresh(self, frame):
