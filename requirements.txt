@@ -1,10 +1,8 @@
 appnope==0.1.0
+blessings==1.6
 cycler==0.10.0
 decorator==4.0.10
 imutils==0.3.6
-ipdb==0.10.1
-ipython==5.1.0
-ipython-genutils==0.1.0
 matplotlib==1.5.3
 numpy==1.11.2
 opencv-python==3.1.0.3
