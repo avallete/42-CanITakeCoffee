@@ -1,7 +1,4 @@
-from imutils.object_detection import non_max_suppression
-from imutils import paths
 import numpy as np
-import argparse
 import imutils
 import cv2
 
@@ -24,7 +21,7 @@ class PeopleDetection(object):
     def get_image_thresh(self, frame):
         frame_delta = self.get_background_frame_delta(frame)
         thresh = cv2.threshold(frame_delta, 35, 255, cv2.THRESH_BINARY)[1]
-        thresh = cv2.dilate(thresh, None, iterations=5)
+        thresh = cv2.dilate(thresh, None, iterations=2)
         return thresh
 
     def detect_objects_on_frame(self, frame):
@@ -41,6 +38,12 @@ class PeopleDetection(object):
             if cv2.contourArea(contour) >= min_area:
                 return True
         return False
+
+    def debug_process(self, frame, filepath, min_area=350):
+        frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
+        cv2.imwrite("%s-Thresh.jpg" % filepath, self.get_image_thresh(frame.copy()))
+        cv2.imwrite("%s-Delta.jpg" % filepath, self.get_background_frame_delta(frame.copy()))
+        cv2.imwrite("%s-Objects.jpg" % filepath, self.trace_contours(frame.copy(), self.detect_objects_on_frame(frame), min_area))
 
     @staticmethod
     def trace_contours(frame, contours, min_area=350):
