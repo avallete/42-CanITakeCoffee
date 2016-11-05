@@ -23,7 +23,7 @@ def monitor_coffee_machine(min_area=500, debug=False):
                     detector.debug_process(img, "debug/%s" % now, min_area)
                 percent = detector.compute_percent_occupation(img, min_area)
                 with term.location(0, 0):
-                    if percent:
+                    if int(percent) > 0:
                         print("{t.clear}The coffee machine is: {t.red}{t.bold}occuped ({percent})%{t.normal}.".format(t=term, percent=int(percent)))
                     else:
                         print("{t.clear}The coffee machine is: {t.green}{t.bold}free{t.normal}.".format(t=term))
