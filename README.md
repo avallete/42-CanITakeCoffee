@@ -18,7 +18,7 @@ It's based on scam.42.fr (so you can't use it outside of 42). And OpenCV library
 
 ### How to:
     # Git clone the project
-    git clone https://github.com/avallete/CanIMakeCoffee.git; cd CanIMakeCofee
+    git clone https://github.com/avallete/42-CanITakeCoffee.git; cd CanIMakeCofee
     # Create and activate virtualenv
     virtualenv --python=python3 venv; source venv/bin/activate
     # Install project requirements
