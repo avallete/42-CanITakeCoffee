@@ -26,3 +26,11 @@ It's based on scam.42.fr (so you can't use it outside of 42). And OpenCV library
     # Run the script
     python ./coffee_monitor.py
 
+## License
+Copyright © 2016 Valleteau Andrew <avallete@student.42.fr>
+
+This work is free. You can redistribute it and/or modify it under the
+terms of the Do What The Fuck You Want To Public License, Version 2,
+as published by Sam Hocevar.
+
+See the license.txt file for more details.
