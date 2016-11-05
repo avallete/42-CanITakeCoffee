@@ -21,13 +21,12 @@ def monitor_coffee_machine(min_area=500, debug=False):
                 img = PeopleDetection.pil_to_cv2_img(cam.get_cam_image())
                 if debug:
                     detector.debug_process(img, "debug/%s" % now, min_area)
-                occuped = detector.has_people_detected(img, min_area)
+                percent = detector.compute_percent_occupation(img, min_area)
                 with term.location(0, 0):
-                    term.clear_eol()
-                    if occuped:
-                        print("The coffee machine is: {t.red}{t.bold}occuped{t.normal}.".format(t=term))
+                    if percent:
+                        print("The coffee machine is: {t.red}{t.bold}occuped ({%percentd})%%{t.normal}.{t.clear_eol}".format(t=term, percent=int(percent)))
                     else:
-                        print("The coffee machine is: {t.green}{t.bold}free{t.normal}.   ".format(t=term))
+                        print("The coffee machine is: {t.green}{t.bold}free{t.normal}.{t.clear_eol}".format(t=term))
                 sleep(1)
         except KeyboardInterrupt:
             pass
@@ -40,6 +39,7 @@ def analyse_folder(path, min_area=500):
     os.makedirs("debug/analyse/", exist_ok=True)
     for filename in os.listdir(path):
         img = imread("%s/%s" % (path, filename))
+        print("{i}  :: occupation: {percent}%".format(i=i, percent=int(detector.compute_percent_occupation(img, min_area))))
         detector.debug_process(img, "debug/analyse/%s" % i, min_area)
         i += 1
 

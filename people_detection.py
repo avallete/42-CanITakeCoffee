@@ -45,6 +45,23 @@ class PeopleDetection(object):
                 return True
         return False
 
+    def compute_percent_occupation(self, frame, min_area=350):
+        """Compute the occupation percentage of the image."""
+        img_size = self.background_gray.size
+        frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
+        contours = self.detect_objects_on_frame(frame)
+        total_contour_area = 0.0
+
+        for contour in contours:
+            area = cv2.contourArea(contour)
+            if area > min_area:
+                _, _, w, h = cv2.boundingRect(contour)
+                total_contour_area += (w * h)
+        if total_contour_area > 0:
+            return ((total_contour_area / img_size) * 100)
+        else:
+            return 0
+
     def debug_process(self, frame, filepath, min_area=350):
         frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
         cv2.imwrite("%s-Orig.jpg" % filepath, frame)
