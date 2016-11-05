@@ -24,7 +24,7 @@ def monitor_coffee_machine(min_area=500, debug=False):
                 percent = detector.compute_percent_occupation(img, min_area)
                 with term.location(0, 0):
                     if percent:
-                        print("The coffee machine is: {t.red}{t.bold}occuped ({percent}){t.normal}.{t.clear_eol}".format(t=term, percent=percent))
+                        print("The coffee machine is: {t.red}{t.bold}occuped ({%percentd})%%{t.normal}.{t.clear_eol}".format(t=term, percent=int(percent)))
                     else:
                         print("The coffee machine is: {t.green}{t.bold}free{t.normal}.{t.clear_eol}".format(t=term))
                 sleep(1)
@@ -39,7 +39,7 @@ def analyse_folder(path, min_area=500):
     os.makedirs("debug/analyse/", exist_ok=True)
     for filename in os.listdir(path):
         img = imread("%s/%s" % (path, filename))
-        print("%s  :: occupation: %s" % (i, detector.compute_percent_occupation(img, min_area)))
+        print("{i}  :: occupation: {percent}%".format(i=i, percent=int(detector.compute_percent_occupation(img, min_area))))
         detector.debug_process(img, "debug/analyse/%s" % i, min_area)
         i += 1
 
