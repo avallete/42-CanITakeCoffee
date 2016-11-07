@@ -46,7 +46,7 @@ def analyse_folder(path, min_area=500):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--min_area", help="Set the minimum area size for object detection." , type=int, dest="area", default=500)
+    parser.add_argument("--min_area", help="Set the minimum area size for object detection." , type=int, dest="area", default=1500)
     parser.add_argument("-d", "--debug", help="""Save each video frame into a debug folder with different debug data.
     *-Orig.jpg: The original image.
     *-Delta.jpg: The delta between current frame and background image.
