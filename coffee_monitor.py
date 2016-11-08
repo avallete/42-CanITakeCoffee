@@ -9,8 +9,9 @@ from time import sleep, time
 
 def monitor_coffee_machine(min_area=500, debug=False):
     cam = CoffeeMachineCam()
-    detector = PeopleDetection(cam._get_background_img_path())
+    detector = PeopleDetection(cam._get_background_img_path(), "%s/mask.jpg" % cam.dir_path)
     term = Terminal()
+    changeBackground = 0
 
     if debug:
         os.makedirs("debug/", exist_ok=True)
@@ -19,15 +20,26 @@ def monitor_coffee_machine(min_area=500, debug=False):
             while True:
                 now = int(time())
                 img = PeopleDetection.pil_to_cv2_img(cam.get_cam_image())
+
                 if debug:
                     detector.debug_process(img, "debug/%s" % now, min_area)
                 percent = detector.compute_percent_occupation(img, min_area)
+                # If the background diff is lower than 10% for five follwing minutes. We use the image as the new background.
+                # Used to avoid luminosity errors or fixed object movement perturbation.
+                if percent > 0 and percent < 10:
+                    changeBackground += 1
+                    if changeBackground == 300:
+                        detector.set_background(img, cam._get_background_img_path())
+                        changeBackground = 0
+                else:
+                    changeBackground = 0
+
                 with term.location(0, 0):
                     if int(percent) > 0:
                         print("{t.clear}The coffee machine is: {t.red}{t.bold}occupied ({percent})%{t.normal}.".format(t=term, percent=int(percent)))
                     else:
                         print("{t.clear}The coffee machine is: {t.green}{t.bold}free{t.normal}.".format(t=term))
-                detector.set_background(img)
+
                 sleep(1)
         except KeyboardInterrupt:
             pass
