@@ -9,7 +9,7 @@ from time import sleep, time
 
 def monitor_coffee_machine(min_area=500, debug=False):
     cam = CoffeeMachineCam()
-    detector = PeopleDetection(cam._get_background_img_path(), "%s/mask.jpg" % cam.dir_path)
+    detector = PeopleDetection(cam._get_background_img_path())
     term = Terminal()
 
     if debug:
@@ -27,6 +27,7 @@ def monitor_coffee_machine(min_area=500, debug=False):
                         print("{t.clear}The coffee machine is: {t.red}{t.bold}occupied ({percent})%{t.normal}.".format(t=term, percent=int(percent)))
                     else:
                         print("{t.clear}The coffee machine is: {t.green}{t.bold}free{t.normal}.".format(t=term))
+                detector.set_background(img)
                 sleep(1)
         except KeyboardInterrupt:
             pass
@@ -41,12 +42,13 @@ def analyse_folder(path, min_area=500):
         img = imread("%s/%s" % (path, filename))
         print("{i}  :: occupation: {percent}%".format(i=i, percent=int(detector.compute_percent_occupation(img, min_area))))
         detector.debug_process(img, "debug/analyse/%s" % i, min_area)
+        detector.set_background(img)
         i += 1
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--min_area", help="Set the minimum area size for object detection." , type=int, dest="area", default=1500)
+    parser.add_argument("--min_area", help="Set the minimum area size for object detection." , type=int, dest="area", default=250)
     parser.add_argument("-d", "--debug", help="""Save each video frame into a debug folder with different debug data.
     *-Orig.jpg: The original image.
     *-Delta.jpg: The delta between current frame and background image.
