@@ -15,6 +15,12 @@ class PeopleDetection(object):
         else:
             self.image_mask = False
 
+    def set_background(self, frame):
+        self.background_cv2 = frame
+        self.work_background = imutils.resize(self.background_cv2, width=min(600, self.background_cv2.shape[1]))
+        self.background_gray = cv2.cvtColor(self.work_background, cv2.COLOR_BGR2GRAY)
+        self.background_gray = cv2.medianBlur(self.background_gray, 5)
+
     def get_background_frame_delta(self, frame):
         frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
         frame_gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
