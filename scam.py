@@ -107,6 +107,13 @@ class Scam(object):
             print("Error with request: %s" % e)
         return None
 
+    def _get_background_mask_path(self):
+        """Try to get the background mask image. Return the path if exist, else return None"""
+        if os.path.isfile("%s/mask.jpg" % (self.dir_path)):
+            return "%s/mask.jpg" % self.dir_path
+        else:
+            return None
+
     def _get_background_img_path(self):
         """Try to get the background image. Return the path if exist, else return None"""
         if os.path.isfile("%s/background.jpg" % (self.dir_path)):
