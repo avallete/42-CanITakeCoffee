@@ -1,5 +1,6 @@
 import os
 import argparse
+import rumps
 from blessings import Terminal
 from cv2 import imread, imwrite
 from coffee_machine_cam import CoffeeMachineCam
@@ -7,6 +8,28 @@ from people_detection import PeopleDetection
 from camera_monitor import CameraMonitor
 from time import sleep
 
+rumps.debug_mode(True)
+
+
+
+class SystemTrayMonitor(rumps.App):
+
+    def __init__(self, min_area=500, debug=False):
+        super(SystemTrayMonitor, self).__init__("Coffee Machine")
+        self.cam = CoffeeMachineCam()
+        self.monitor = CameraMonitor(self.cam)
+        self.min_area = min_area
+        self.debug = debug
+
+    @rumps.timer(1)
+    def update_title(self, sender):
+        try:
+            print(self)
+            self.title = "Coffee Machine: %s%%" % int(self.monitor.get_occupation_percentage(self.min_area, self.debug))
+        except Exception as e:
+            print(e)
+            pass
+        print("update")
 
 def monitor_print_terminal():
     term = Terminal()
@@ -62,7 +85,15 @@ if __name__ == "__main__":
     """, action="store_true", dest="debug", default=False)
     parser.add_argument("-a", "--analyse", help="""The in parameter the path of a file containing cam screenshoot folder.
     Then, run the debug on it and save result in '/debug/analyse' folder.""", dest="analyse", type=str, default=False)
+    parser.add_argument("-r", "--reamon", help="""The in parameter the path of a file containing cam screenshoot folder.
+    Then, run the debug on it and save result in '/debug/analyse' folder.""", dest="reamon", type=str, default=False)
+
     args = parser.parse_args()
+
+    if args.reamon:
+        app = SystemTrayMonitor(args.area, args.debug)
+        app.run()
+
     if args.analyse:
         if os.path.exists(args.analyse):
             analyse_folder(args.analyse, args.area)
