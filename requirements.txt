@@ -1,10 +1,9 @@
-altgraph==0.12
+git+git://github.com/avallete/rumps.git@avallete/timer_data
 appnope==0.1.0
 blessings==1.6
 cycler==0.10.0
 decorator==4.0.10
 imutils==0.3.6
-ipython==5.1.0
 ipython-genutils==0.1.0
 macholib==1.7
 matplotlib==1.5.3
@@ -85,7 +84,6 @@ pyparsing==2.1.10
 python-dateutil==2.5.3
 pytz==2016.7
 requests==2.11.1
-rumps==0.2.1
 simplegeneric==0.8.1
 six==1.10.0
 traitlets==4.3.1

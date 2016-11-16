@@ -8,9 +8,11 @@ from people_detection import PeopleDetection
 from camera_monitor import CameraMonitor
 from time import sleep
 
-rumps.debug_mode(True)
-
-
+def update_title(sender):
+    try:
+        sender.data.title = "Coffee Machine Occupation: %s%%" % int(sender.data.monitor.get_occupation_percentage(sender.data.min_area, sender.data.debug))
+    except Exception as e:
+        pass
 
 class SystemTrayMonitor(rumps.App):
 
@@ -20,16 +22,6 @@ class SystemTrayMonitor(rumps.App):
         self.monitor = CameraMonitor(self.cam)
         self.min_area = min_area
         self.debug = debug
-
-    @rumps.timer(1)
-    def update_title(self, sender):
-        try:
-            print(self)
-            self.title = "Coffee Machine: %s%%" % int(self.monitor.get_occupation_percentage(self.min_area, self.debug))
-        except Exception as e:
-            print(e)
-            pass
-        print("update")
 
 def monitor_print_terminal():
     term = Terminal()
@@ -53,7 +45,7 @@ def monitor_coffee_machine(min_area=500, debug=False):
     next(printer)
     try:
         while True:
-            percentage = monitor.get_occupation_percentage(min_area, debug)
+            percentage = monitor.get_occupation_percentage(min_area, debug, 500)
             printer.send(("Coffee Machine", percentage))
             sleep(1)
     except KeyboardInterrupt:
@@ -85,13 +77,14 @@ if __name__ == "__main__":
     """, action="store_true", dest="debug", default=False)
     parser.add_argument("-a", "--analyse", help="""The in parameter the path of a file containing cam screenshoot folder.
     Then, run the debug on it and save result in '/debug/analyse' folder.""", dest="analyse", type=str, default=False)
-    parser.add_argument("-r", "--reamon", help="""The in parameter the path of a file containing cam screenshoot folder.
-    Then, run the debug on it and save result in '/debug/analyse' folder.""", dest="reamon", type=str, default=False)
+    parser.add_argument("-st", "--system-tray", help="""Launch the app in system-tray""", dest="system_tray", action="store_true", default=False)
 
     args = parser.parse_args()
 
-    if args.reamon:
+    if args.system_tray:
         app = SystemTrayMonitor(args.area, args.debug)
+        timer = rumps.Timer(update_title, 1, app)
+        timer.start()
         app.run()
 
     if args.analyse:
