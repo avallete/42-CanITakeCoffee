@@ -1,5 +1,6 @@
 import os
 import argparse
+import rumps
 from blessings import Terminal
 from cv2 import imread, imwrite
 from coffee_machine_cam import CoffeeMachineCam
@@ -7,6 +8,20 @@ from people_detection import PeopleDetection
 from camera_monitor import CameraMonitor
 from time import sleep
 
+def update_title(sender):
+    try:
+        sender.data.title = "Coffee Machine Occupation: %s%%" % int(sender.data.monitor.get_occupation_percentage(sender.data.min_area, sender.data.debug))
+    except Exception as e:
+        pass
+
+class SystemTrayMonitor(rumps.App):
+
+    def __init__(self, min_area=500, debug=False):
+        super(SystemTrayMonitor, self).__init__("Coffee Machine")
+        self.cam = CoffeeMachineCam()
+        self.monitor = CameraMonitor(self.cam)
+        self.min_area = min_area
+        self.debug = debug
 
 def monitor_print_terminal():
     term = Terminal()
@@ -30,7 +45,7 @@ def monitor_coffee_machine(min_area=500, debug=False):
     next(printer)
     try:
         while True:
-            percentage = monitor.get_occupation_percentage(min_area, debug)
+            percentage = monitor.get_occupation_percentage(min_area, debug, 500)
             printer.send(("Coffee Machine", percentage))
             sleep(1)
     except KeyboardInterrupt:
@@ -62,7 +77,16 @@ if __name__ == "__main__":
     """, action="store_true", dest="debug", default=False)
     parser.add_argument("-a", "--analyse", help="""The in parameter the path of a file containing cam screenshoot folder.
     Then, run the debug on it and save result in '/debug/analyse' folder.""", dest="analyse", type=str, default=False)
+    parser.add_argument("-st", "--system-tray", help="""Launch the app in system-tray""", dest="system_tray", action="store_true", default=False)
+
     args = parser.parse_args()
+
+    if args.system_tray:
+        app = SystemTrayMonitor(args.area, args.debug)
+        timer = rumps.Timer(update_title, 1, app)
+        timer.start()
+        app.run()
+
     if args.analyse:
         if os.path.exists(args.analyse):
             analyse_folder(args.analyse, args.area)
