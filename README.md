@@ -9,6 +9,9 @@ It's based on scam.42.fr (so you can't use it outside of 42). And OpenCV library
 ### Demo:
 ![coffee3](https://cloud.githubusercontent.com/assets/8771783/20031916/ea8af6a6-a37f-11e6-8279-45005bd6f39c.gif)
 
+### Changelog:
+  - Add SystemTray(OSX top bar) monitoring.
+
 ## Installation:
 
 ### Requirements:
@@ -19,12 +22,15 @@ It's based on scam.42.fr (so you can't use it outside of 42). And OpenCV library
 ### How to:
     # Git clone the project
     git clone https://github.com/avallete/42-CanITakeCoffee.git; cd CanIMakeCofee
-    # Create and activate virtualenv
-    virtualenv --python=python3 venv; source venv/bin/activate
-    # Install project requirements
-    pip install -r requirements.txt
-    # Run the script
-    python ./coffee_monitor.py
+    make
+
+To run the SystemTray Monitoring:
+
+    source venv/bin/activate; python coffee_monitor -st &
+
+To run the Terminal Monitoring:
+
+    source venv/bin/activate; python coffee_monitor
 
 ## License
 Copyright © 2016 Valleteau Andrew <avallete@student.42.fr>
