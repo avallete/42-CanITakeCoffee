@@ -22,7 +22,7 @@ class CameraMonitor(object):
             return False
         return True
 
-    def get_occupation_percentage(self, min_area=500, debug=False, reset_gap=350):
+    def get_occupation_percentage(self, min_area=1500, debug=False, reset_gap=350):
         """Return the occupation percentage of monitored camera. And take care to update the background image."""
         img = PeopleDetection.pil_to_cv2_img(self.camera.get_cam_image())
 
@@ -32,7 +32,7 @@ class CameraMonitor(object):
 
         # Check if the image remain approximately the same for enough time to be save as new background.
         if self.percentage_list:
-            if self.approx_equal(self.percentage_list[0], percent, 3):
+            if self.approx_equal(self.percentage_list[0], percent, 5):
                 self.percentage_list.append(percent)
             else:
                 self.percentage_list = []

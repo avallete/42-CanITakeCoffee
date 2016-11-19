@@ -1,3 +1,4 @@
+import os
 import numpy as np
 import imutils
 import cv2
@@ -70,6 +71,7 @@ class PeopleDetection(object):
             return 0
 
     def debug_process(self, frame, filepath, min_area=350):
+        os.makedirs("debug", exist_ok=True)
         frame = imutils.resize(frame, width=(min(600, self.background_cv2.shape[1])))
         cv2.imwrite("%s-Orig.jpg" % filepath, frame)
         cv2.imwrite("%s-Thresh.jpg" % filepath, self.get_image_thresh(frame))
