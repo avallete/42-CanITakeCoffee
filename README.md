@@ -1,4 +1,4 @@
-#Can I Make Coffee ?
+# Can I Make Coffee ?
 
 ### What is it ?:
 This is a simple little camera based movement detector. Specially designed to detect if the 42 coffee machine are free.
@@ -35,6 +35,8 @@ To run the SystemTray Monitoring:
 To run the Terminal Monitoring:
 
     source venv/bin/activate; python coffee_monitor
+
+## This project is deprecated and no longer maintened
 
 ## License
 Copyright © 2016 Valleteau Andrew <avallete@student.42.fr>
